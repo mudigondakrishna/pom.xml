@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3a4c4392-d4ab-43c3-a877-0c047d617f3f" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="5fd81554-9174-4ed3-986c-7cd9540b3d27" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<jms:config name="JMS_Config1" doc:name="JMS Config" doc:id="17aa1144-3ca4-4e53-b442-cf0372efacdf" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<flow name="jmsFlow" doc:id="addfab0f-623e-47d7-9cd8-381264832ae7" >
+		<http:listener doc:name="Listener" doc:id="56b86f10-d502-4066-8b21-cb0a6ab87a57" config-ref="HTTP_Listener_config" path="/jmss"/>
+		<jms:publish doc:id="24849b27-2b03-4d17-986b-8fa21b08ca4e" doc:name="" config-ref="JMS_Config" destination="prasad"/>
+		<logger level="INFO" doc:name="Logger" doc:id="abbf82fe-5761-4422-acd6-661b15237de0" message="prasad data publish"/>
+	</flow>
+	<flow name="jmsFlow1" doc:id="9a13c0d3-31e3-47b5-945c-73056eb70ceb" >
+		<jms:listener doc:name="On New Message" doc:id="1865abf8-7220-48fe-b001-f2054417fe68" config-ref="JMS_Config1" destination="prasad">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="5b968a0e-debe-4534-850a-5a709d279561" message="#[payload]"/>
+	</flow>
+</mule>
